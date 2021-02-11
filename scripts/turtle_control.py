@@ -5,6 +5,7 @@ import time
 import sys
 import math
 import angles
+from scipy import integrate
 from geometry_msgs.msg import Pose2D, Twist
 from turtlesim.msg import Pose
 
@@ -45,14 +46,21 @@ def robot_comand(robot_odom, goal, gain):
     delta_x = x_d - x
     delta_y = y_d - y
 
-    erro_p = round(math.sqrt((delta_x)**2 + (delta_y)**2) - 3, 3)
+    distance = 1.5
+
+    error_p_exact = math.sqrt((delta_x)**2 + (delta_y)**2)
+
+    erro_p = round(error_p_exact - distance, 3)
+
+    print('erro_p')
+    print(erro_p)
 
     heading = round(math.atan2(delta_y, delta_x), 3)
 
     erro_theta = angles.shortest_angular_distance(theta, heading)
 
-    v = K_v*erro_p
     omega = K_omega*erro_theta
+    v = K_v*erro_p + omega
 
     robot_vel = Twist()
     robot_vel.linear.x = v
@@ -88,8 +96,8 @@ def main_control():
 ### Main ###
 robot_odom = Pose2D()
 goal = Pose2D()
-k_v = 10
-k_w = 0.8
+k_v = 1.5
+k_w = 1.5
 gain = [k_v, k_w]
 
 if __name__ == '__main__':
