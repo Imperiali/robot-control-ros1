@@ -20,7 +20,9 @@ def callback_robot_pose(msg):
 def callback_robot_goal(msg):
     global goal
 
-    goal = msg
+    goal.x = msg.x
+    goal.y = msg.y
+    goal.theta = msg.theta
 
 
 def robot_comand(robot_odom, goal, gain):
@@ -43,7 +45,7 @@ def robot_comand(robot_odom, goal, gain):
     delta_x = x_d - x
     delta_y = y_d - y
 
-    erro_p = round(math.sqrt((delta_x)**2 + (delta_y)**2), 3)
+    erro_p = round(math.sqrt((delta_x)**2 + (delta_y)**2) - 3, 3)
 
     heading = round(math.atan2(delta_y, delta_x), 3)
 
@@ -64,9 +66,9 @@ def main_control():
     global gain
 
     rospy.init_node('turtle_control', anonymous=True)
-    robot_pose = rospy.Subscriber('/turtle1/pose', Pose, callback_robot_pose)
-    robot_goal = rospy.Subscriber('/goal', Pose2D, callback_robot_goal)
-    pub_cmd_vel = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+    robot_pose = rospy.Subscriber('/turtle2/pose', Pose, callback_robot_pose)
+    robot_goal = rospy.Subscriber('/turtle1/pose', Pose, callback_robot_goal)
+    pub_cmd_vel = rospy.Publisher('/turtle2/cmd_vel', Twist, queue_size=10)
 
     rate = rospy.Rate(15)
 
@@ -86,7 +88,7 @@ def main_control():
 ### Main ###
 robot_odom = Pose2D()
 goal = Pose2D()
-k_v = 0.5
+k_v = 10
 k_w = 0.8
 gain = [k_v, k_w]
 
