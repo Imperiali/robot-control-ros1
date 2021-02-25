@@ -1,0 +1,11 @@
+<launch>
+
+    <node
+        name="camera_node"
+        pkg="dr04"
+        type="camera_node.py"
+        output="screen" />
+
+    <remap from="image_raw" to="/image_raw"/>
+
+</launch>
